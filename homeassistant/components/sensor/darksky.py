@@ -315,6 +315,7 @@ class DarkSkySensor(Entity):
                               'apparent_temperature_low',
                               'apparent_temperature_max',
                               'apparent_temperature_high',
+                              'precip_probability',
                               'precip_intensity_max',
                               'precip_accumulation']):
             self.forecast_data.update_daily()

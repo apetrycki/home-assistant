@@ -19,7 +19,7 @@ from homeassistant.components.media_player import (
     SUPPORT_VOLUME_STEP, MediaPlayerDevice)
 from homeassistant.const import (
     CONF_HOST, CONF_NAME, CONF_PASSWORD, CONF_PORT, STATE_OFF, STATE_PAUSED,
-    STATE_PLAYING)
+    STATE_PLAYING, STATE_IDLE)
 import homeassistant.helpers.config_validation as cv
 from homeassistant.util import Throttle
 
@@ -145,7 +145,7 @@ class MpdDevice(MediaPlayerDevice):
         if self._status['state'] == 'pause':
             return STATE_PAUSED
         if self._status['state'] == 'stop':
-            return STATE_OFF
+            return STATE_IDLE
 
         return STATE_OFF
 
@@ -270,7 +270,10 @@ class MpdDevice(MediaPlayerDevice):
 
     def media_play(self):
         """Service to send the MPD the command for play/pause."""
-        self._client.pause(0)
+        if not self._client.playlist() and self._playlists[0]:
+            self.play_media(MEDIA_TYPE_PLAYLIST, self._playlists[0])
+        else:
+            self._client.pause(0)
 
     def media_pause(self):
         """Service to send the MPD the command for play/pause."""
